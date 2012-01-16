@@ -1,0 +1,5 @@
+Villustrator
+
+This is a gui for creating Vim colorschemes right in the browser. 
+
+This was made during the PennApps hackathon recently, and it was my first time ever using javascript. As such, the code is a complete mess right now. I plan on rewriting the majority of it. 
