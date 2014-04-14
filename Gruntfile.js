@@ -45,6 +45,10 @@ module.exports = function (grunt) {
       gruntfile: {
         files: ['Gruntfile.js']
       },
+      templates: {
+        files: ['<%= yeoman.app %>/views/{,*/}*.html'],
+        tasks: ['ngtemplates:build']
+      },
       livereload: {
         options: {
           livereload: '<%= connect.options.livereload %>'
@@ -349,6 +353,34 @@ module.exports = function (grunt) {
         configFile: 'karma.conf.js',
         singleRun: true
       }
+    },
+
+    // Pre-compile Angular templates
+    ngtemplates: {
+      server: {
+        cwd: 'app',
+        src: 'views/**.html',
+        dest: '<%= yeoman.app %>/scripts/templates.js',
+        options: {
+          module: 'villustratorTemplates',
+          standalone: true,
+        }
+      },
+      build: {
+        cwd: 'app',
+        src: 'views/**.html',
+        dest: '<%= yeoman.app %>/scripts/templates.js',
+        options: {
+          module: 'villustratorTemplates',
+          standalone: true,
+          usemin: 'scripts/scripts.js',
+          htmlmin: {
+            collapseWhitespace: true,
+            collapseBooleanAttributes: true,
+            removeCommentsFromCDATA: true,
+          }
+        }
+      }
     }
   });
 
@@ -361,6 +393,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'bower-install',
+      'ngtemplates:server',
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
@@ -385,6 +418,7 @@ module.exports = function (grunt) {
     'clean:dist',
     'bower-install',
     'useminPrepare',
+    'ngtemplates:build',
     'concurrent:dist',
     'autoprefixer',
     'concat',

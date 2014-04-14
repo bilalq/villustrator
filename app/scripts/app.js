@@ -2,7 +2,8 @@
 
 angular.module('villustratorApp', [
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'villustratorTemplates'
 ])
   .config(function ($routeProvider) {
     $routeProvider
