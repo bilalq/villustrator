@@ -1,4 +1,4 @@
-// Generated on 2014-04-13 using generator-angular 0.7.1
+// Generated on 2014-04-14 using generator-angular 0.7.1
 'use strict';
 
 // # Globbing
@@ -27,16 +27,13 @@ module.exports = function (grunt) {
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
-      js: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
-        tasks: ['newer:jshint:all'],
-        options: {
-          livereload: true
-        }
+      coffee: {
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        tasks: ['newer:coffee:dist']
       },
-      jsTest: {
-        files: ['test/spec/{,*/}*.js'],
-        tasks: ['newer:jshint:test', 'karma']
+      coffeeTest: {
+        files: ['test/spec/{,*/}*.{coffee,litcoffee,coffee.md}'],
+        tasks: ['newer:coffee:test', 'karma']
       },
       compass: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
@@ -46,8 +43,8 @@ module.exports = function (grunt) {
         files: ['Gruntfile.js']
       },
       templates: {
-        files: ['<%= yeoman.app %>/views/{,*/}*.html'],
-        tasks: ['ngtemplates:build']
+        files: ['<%= yeoman.app %>/views/**/*.html'],
+        tasks: ['ngtemplates:server']
       },
       livereload: {
         options: {
@@ -56,6 +53,7 @@ module.exports = function (grunt) {
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
+          '.tmp/scripts/{,*/}*.js',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -102,15 +100,8 @@ module.exports = function (grunt) {
         reporter: require('jshint-stylish')
       },
       all: [
-        'Gruntfile.js',
-        '<%= yeoman.app %>/scripts/{,*/}*.js'
-      ],
-      test: {
-        options: {
-          jshintrc: 'test/.jshintrc'
-        },
-        src: ['test/spec/{,*/}*.js']
-      }
+        'Gruntfile.js'
+      ]
     },
 
     // Empties folders to start fresh
@@ -152,6 +143,31 @@ module.exports = function (grunt) {
     },
 
 
+    // Compiles CoffeeScript to JavaScript
+    coffee: {
+      options: {
+        sourceMap: true,
+        sourceRoot: ''
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts',
+          src: '{,*/}*.coffee',
+          dest: '.tmp/scripts',
+          ext: '.js'
+        }]
+      },
+      test: {
+        files: [{
+          expand: true,
+          cwd: 'test/spec',
+          src: '{,*/}*.coffee',
+          dest: '.tmp/spec',
+          ext: '.js'
+        }]
+      }
+    },
 
 
     // Compiles Sass to CSS and generates necessary files if requested
@@ -309,12 +325,17 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'compass:server'
+        'coffee:dist',
+        'compass:server',
+        'ngtemplates:server'
       ],
       test: [
-        'compass'
+        'coffee',
+        'compass',
+        'ngtemplates:server'
       ],
       dist: [
+        'coffee',
         'compass:dist',
         'imagemin',
         'svgmin'
@@ -359,25 +380,25 @@ module.exports = function (grunt) {
     ngtemplates: {
       server: {
         cwd: 'app',
-        src: 'views/**.html',
+        src: 'views/**/*.html',
         dest: '<%= yeoman.app %>/scripts/templates.js',
         options: {
-          module: 'villustratorTemplates',
-          standalone: true,
+          module: 'Villustrator.templates',
+          standalone: true
         }
       },
       build: {
         cwd: 'app',
-        src: 'views/**.html',
+        src: 'views/**/*.html',
         dest: '<%= yeoman.app %>/scripts/templates.js',
         options: {
-          module: 'villustratorTemplates',
+          module: 'Villustrator.templates',
           standalone: true,
           usemin: 'scripts/scripts.js',
           htmlmin: {
             collapseWhitespace: true,
             collapseBooleanAttributes: true,
-            removeCommentsFromCDATA: true,
+            removeCommentsFromCDATA: true
           }
         }
       }
@@ -393,7 +414,6 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'bower-install',
-      'ngtemplates:server',
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
