@@ -7,13 +7,18 @@ This service allows for content to be downloaded without need of a server.
     .factory 'downloadManager', ($timeout) ->
 
 `download` function
--------------------
-### Params
+
+Triggers a file download based on the parameters given.
+
+Params:
+
 * `fileName`: Name to give downloaded file.
 * `content`: Content of file to be downloaded.
-* `mimeType`: (optional) Mime type of file. Defaults to `text/plain`
+* `mimeType`: (optional) Mime type of file. Defaults to `text/plain`.
+* `charset`: (optional) Charset of content. Defaults to `utf-8`.
 
-### Returns
+Returns:
+
 A `Promise` that is resolved once download begins and rejected if fileName and
 content are not set.
 
