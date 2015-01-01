@@ -1,8 +1,0 @@
-@import "base";
-@import "components/global";
-@import "components/header";
-
-// Hide raw templates until Angular app loads
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-  display: none !important;
-}
