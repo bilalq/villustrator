@@ -1,9 +1,16 @@
     'use strict'
 
     angular.module('Villustrator')
-    .controller 'MainCtrl', ($scope) ->
-      $scope.awesomeThings = [
-        'HTML5 Boilerplate'
-        'AngularJS'
-        'Karma'
-      ]
+    .controller 'MainCtrl', ($scope, vimScopes, paletteManager) ->
+
+      $scope.pickers = vimScopes.map (vimScope) ->
+        color: Math.floor Math.random() * 256
+        palette: paletteManager.getPalette()
+        desc: vimScope.desc
+        vimScope: vimScope.vimScope
+
+      $scope.picker ||= { color: 123 }
+
+      $scope.paletteToggle = ->
+        console.log arguments[0]
+

@@ -1,3 +1,14 @@
-<div class="header">
-  <h1>Villustrator</h1>
+<div ng-controller="MainCtrl">
+  <div class="header">
+    <h1>Villustrator</h1>
+  </div>
+
+  <div class="hey">
+    <div ng-repeat="picker in pickers">
+      <color-picker palette="picker.palette" color="picker.color"></color-picker>
+
+      <input type="text" ng-model="picker.color">
+      <input type="checkbox" ng-model="picker.palette" ng-change="paletteToggle(picker)">
+    </div>
+  </div>
 </div>

@@ -13,6 +13,5 @@ This is the root application module.
       $routeProvider
       .when '/',
         templateUrl: 'views/main.html'
-        controller: 'MainCtrl'
       .otherwise
         redirectTo: '/'

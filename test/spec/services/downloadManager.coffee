@@ -3,7 +3,7 @@
 describe 'Service: downloadManager', () ->
 
   # load the service's module
-  beforeEach module 'villustratorApp'
+  beforeEach module 'Villustrator'
 
   # instantiate service
   downloadManager = {}

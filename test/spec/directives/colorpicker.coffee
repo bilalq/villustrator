@@ -3,7 +3,7 @@
 describe 'Directive: colorPicker', () ->
 
   # load the directive's module
-  beforeEach module 'villustratorApp'
+  beforeEach module 'Villustrator'
 
   scope = {}
 
@@ -13,4 +13,4 @@ describe 'Directive: colorPicker', () ->
   it 'should make hidden element visible', inject ($compile) ->
     element = angular.element '<color-picker></color-picker>'
     element = $compile(element) scope
-    expect(element.text()).toBe 'this is the colorPicker directive'
+    expect(element).toBeDefined()

@@ -5,7 +5,7 @@ This is a directive wrapper around the
 
     'use strict'
     angular.module('Villustrator')
-    .directive 'colorPicker', (paletteManager, $window) ->
+    .directive 'colorPicker', ($window) ->
 
 The color picker comes from a library that exposes itself in the UMD format.
 Since no module loader (other than Angular's) is in use here, the library
@@ -18,26 +18,32 @@ The directive can be used as either an element or attribute directive.
 
       restrict: 'EA'
 
-The directive creates a child scope that prototypically inherits from the parent
-scope. It only interacts with a `picker` property on the scope, and leaves
-primitives alone.
+The directive creates an isolated scope that maintains two-way binding to
+the references set in its `color` and `palette` attributes.
 
-      scope: true
+      scope:
+        color: '='
+        palette: '='
 
 The linking function ensures that two-way binding works on the picker
-properties.
+color.
 
       link: (scope, element, attrs) ->
-        scope.picker ||= {}
-        pickerParams = el: element[0], color: scope.picker.color
-        if scope.picker.palette then pickerParams.palette = scope.picker.palette
+        pickerParams = el: element[0], color: scope.color
+        if scope.palette then pickerParams.palette = scope.palette
 
         picker = new ColorPicker pickerParams
+        scope.color ||= picker.get8BitColor()
+
+        scope.$watch 'color', ->
+          picker.updateColor scope.color
 
         updateColor = (e) -> scope.$apply ->
-          scope.picker.color = e.detail.newColor
+          scope.color = e.detail.newColor
 
         picker.addEventListener 'colorChange', updateColor
-
         scope.$on '$destroy', ->
           picker.removeEventListener 'colorChange', updateColor
+
+        scope.$watch 'palette', ->
+          #console.log 'palette change'
