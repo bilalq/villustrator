@@ -3,7 +3,6 @@ Villustrator
 
 [![Travis Badge][TravisBadge]][Travis]
 
-[https://travis-ci.org/bilalq/villustrator.svg?branch=master
 This is a GUI for creating Vim colorschemes right in the browser.
 
 This was made during the PennApps Spring 2012 hackathon.

@@ -285,7 +285,7 @@ directories.
     gulp.task 'clean', -> del [buildDir, bowerDir]
 
 
-  <!-- Footnote Links -->
+<!-- Footnote Links -->
   [wiredep]: https://github.com/taptapship/wiredep
   [coffeelint]: http://www.coffeelint.org/
   [karma]: https://karma-runner.github.io/
