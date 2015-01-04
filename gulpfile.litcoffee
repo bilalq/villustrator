@@ -212,7 +212,7 @@ when running on a CI server like Travis. Karma has its own mechanism for
 watching, but for simplicity's sake, we just stick to single runs and let gulp
 take care of watching.
 
-    gulp.task 'test', ['templates', 'lint'], (done) ->
+    gulp.task 'test', ['vendor', 'templates'], (done) ->
       karma.server.start
         files: Array::concat.call(
           bowerScriptDeps,
@@ -230,7 +230,8 @@ take care of watching.
         coffeePreprocessor:
           options: { bare: true, sourceMap: true, literate: true }
           transformPath: (path) -> path.replace /\.(lit)?coffee$/, '.js'
-      , done
+      , (exitCode) ->
+        if process.env.CI then process.exit(exitCode) else done(exitCode)
 
 
 Development Server

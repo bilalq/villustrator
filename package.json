@@ -11,7 +11,6 @@
     "coffee-script": "^1.8.0",
     "del": "^1.1.1",
     "gulp": "^3.8.10",
-    "gulp-chmod": "^1.2.0",
     "gulp-coffeelint": "^0.4.0",
     "gulp-coffee": "^2.2.0",
     "gulp-concat": "^2.4.3",
@@ -26,7 +25,6 @@
     "gulp-wrap-js": "^0.2.0",
     "karma": "^0.12.30",
     "karma-coffee-preprocessor": "^0.2.1",
-    "karma-coverage": "^0.2.7",
     "karma-firefox-launcher": "^0.1.4",
     "karma-growl-reporter": "^0.1.1",
     "karma-jasmine": "^0.3.3",
@@ -39,6 +37,6 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "./node_modules/.bin/gulp test"
   }
 }
