@@ -133,13 +133,14 @@ will match the path to the template without the filetype suffix.
 Linting
 -------
 For code linting, we use [coffeelint][coffeelint] and configure it using a JSON
-file with many, many rules. We pass along the path to our config and a boolean
-flag signalling that the literate syntax is being used to the gulp plugin.
+file with many, many rules. Unfortunately, the ability to detect the usage of
+undefined variables like JSHint does is not yet available. There is, however,
+[this issue](https://github.com/clutchski/coffeelint/issues/20) tracking it.
 
     gulp.task 'lint', ->
       lintConfig = "config/coffeelint.json"
       gulp.src '@(app|test)/**/*.litcoffee'
-      .pipe coffeelint 'config/coffeelint.json', true
+      .pipe coffeelint 'config/coffeelint.json'
       .pipe coffeelint.reporter()
 
 
