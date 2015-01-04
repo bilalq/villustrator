@@ -1,7 +1,6 @@
-Build Logic
-===========
-First, we load all the module dependencies we'll need. These will be shaped by
-the stack choices in this project.
+Gulpfile
+========
+This file is home to all the build logic of this application.
 
 This is a purely static single page app, so there's no backend to speak of. The
 stack looks like this:
@@ -14,6 +13,9 @@ stack looks like this:
 * Framework: Angular
 * Test Runner: Karma
 * Test Framework: Jasmine
+* Development Server: st + livereload
+
+We'll start off by requiring all the modules we need to define our build logic.
 
     # Utility modules
     gulp = require 'gulp'
@@ -46,7 +48,8 @@ stack looks like this:
 
 Constants
 ---------
-We need to define some constants that reference paths.
+We need to reference several key directories throughout our task definitions.
+We define them here.
 
     buildDir = 'dist'
     bowerDir = 'bower_components'
@@ -129,19 +132,14 @@ will match the path to the template without the filetype suffix.
 
 Linting
 -------
-Here we define our code linting tasks. Because of the way the coffeelint plugin
-works, we need to make a distinction between our app and test linting. Line
-numbers of Literate CoffeeScript files in the lint report get thrown off if a
-boolean flag isn't marked as true, but setting it to true also makes the linter
-ignore regular CoffeeScript files. Solution? Create two separate streams and
-merge them.
+For code linting, we use [coffeelint][coffeelint] and configure it using a JSON
+file with many, many rules. We pass along the path to our config and a boolean
+flag signalling that the literate syntax is being used to the gulp plugin.
 
     gulp.task 'lint', ->
       lintConfig = "config/coffeelint.json"
-      merge(
-        gulp.src('app/**/*.litcoffee').pipe coffeelint lintConfig, true
-        gulp.src('test/**/*.coffee').pipe coffeelint lintConfig
-      )
+      gulp.src '@(app|test)/**/*.litcoffee'
+      .pipe coffeelint 'config/coffeelint.json', true
       .pipe coffeelint.reporter()
 
 
@@ -170,7 +168,10 @@ mangle.
 
 Stylesheets
 -----------
-SCSS -> CSS
+Stylesheets are written in SCSS syntax here, using gulp-scss as an abstraction
+over node-scss. The ruby based one is a bit more featureful and has a more
+extensive ecosystem around it (things like compass), but that alone isn't worth
+adding ruby as a build dependency here.
 
     gulp.task 'styles', ->
       gulp.src 'styles/**/*.scss'
@@ -184,7 +185,7 @@ SCSS -> CSS
 Static Assets
 -------------
 There are several static assets that can be copied into our build directory
-without going through any transformations. We just copy them here.
+without going through any transformations.
 
     gulp.task 'static', ->
       gulp.src 'static/**'
@@ -192,9 +193,49 @@ without going through any transformations. We just copy them here.
       .pipe livereload()
 
 
+Testing
+-------
+We're using [Karma][karma] as our test runner. It's plugin ecosystem currently
+has some limitations with regards to CoffeeScript support. Two problems have
+been encountered:
+
+* The coverage reporter can't seem to make sense of literate CoffeeScript.
+* The coffee preprocessor can only handle all literate or no literate
+  CoffeeScript. Mixing the two results in failure.
+
+Because of these issues, coverage reports are not currently being built and
+tests are being written using the literate syntax even though it's annoying.
+
+The tests are configured to run in PhantomJS during development and in Firefox
+when running on a CI server like Travis. Karma has its own mechanism for
+watching, but for simplicity's sake, we just stick to single runs and let gulp
+take care of watching.
+
+    gulp.task 'test', ['templates', 'lint'], (done) ->
+      karma.server.start
+        files: Array::concat.call(
+          bowerScriptDeps,
+          'app/**/*.module.litcoffee',
+          'app/**/*.litcoffee',
+          "#{buildDir}/templates.js",
+          bowerTestDeps,
+          'test/**/*.litcoffee'
+        )
+        singleRun: true
+        frameworks: ['jasmine']
+        browsers: if process.env.CI then ['Firefox'] else ['PhantomJS']
+        reporters: ['progress', 'growl']
+        preprocessors: { '@(app|test)/**/*.?(lit)coffee': 'coffee' }
+        coffeePreprocessor:
+          options: { bare: true, sourceMap: true, literate: true }
+          transformPath: (path) -> path.replace /\.(lit)?coffee$/, '.js'
+      , done
+
+
 Development Server
 ------------------
-Starts up an HTTP server to be used for development.
+Starts up an HTTP server to be used for development. This is done just using
+node's `http` module along with the `st` library.
 
     gulp.task 'server', (done) ->
       http.createServer staticServer
@@ -202,20 +243,6 @@ Starts up an HTTP server to be used for development.
         index: 'index.html'
         cache: false
       .listen 4040, done
-
-
-Watch Task
-----------
-This task sets up watchers for file changes to re-run tasks.
-
-    gulp.task 'watch', ['default', 'server'], ->
-      gulp.watch 'bower.json', ['vendor']
-      gulp.watch '@(app|test)/**/*.?(lit)coffee', ['lint']
-      gulp.watch 'static/**', ['static']
-      gulp.watch 'app/**/*.jade', ['templates']
-      gulp.watch 'app/**/*.litcoffee', ['scripts']
-      gulp.watch 'styles/**/*.scss', ['styles']
-      livereload.listen basePath: buildDir
 
 
 Default Task
@@ -230,7 +257,22 @@ to just go and build everything into our build directory.
       'styles'
       'scripts'
       'templates'
+      'test'
     ]
+
+
+Watch Task
+----------
+This task sets up watchers for file changes to re-run tasks.
+
+    gulp.task 'watch', ['default', 'server'], ->
+      gulp.watch 'bower.json', ['vendor']
+      gulp.watch '@(app|test)/**/*.?(lit)coffee', ['lint', 'test']
+      gulp.watch 'static/**', ['static']
+      gulp.watch 'app/**/*.litcoffee', ['scripts']
+      gulp.watch 'app/**/*.jade', ['templates', 'test']
+      gulp.watch 'styles/**/*.scss', ['styles']
+      livereload.listen basePath: buildDir
 
 
 Clean Task
@@ -241,9 +283,7 @@ directories.
     gulp.task 'clean', -> del [buildDir, bowerDir]
 
 
-<!-- Footnote Links -->
+  <!-- Footnote Links -->
   [wiredep]: https://github.com/taptapship/wiredep
-
-TODO:
------
-* Test (Karma)
+  [coffeelint]: http://www.coffeelint.org/
+  [karma]: https://karma-runner.github.io/
