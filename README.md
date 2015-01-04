@@ -1,7 +1,10 @@
 Villustrator
 ============
 
-This is a gui for creating Vim colorschemes right in the browser.
+[![Travis Badge][TravisBadge]][Travis]
+
+[https://travis-ci.org/bilalq/villustrator.svg?branch=master
+This is a GUI for creating Vim colorschemes right in the browser.
 
 This was made during the PennApps Spring 2012 hackathon.
 
@@ -12,4 +15,12 @@ See http://bytefluent.com/vivify if you're interested.~~
 
 <br>
 
-This project is now being revived. I am imagining a tool targeted more towards CLI vim colorschemes.
+This project is now being revived. I am imagining a tool targeted more towards
+CLI Vim colorschemes.
+
+The goal is to do a total rewrite in Angular using literate CoffeeScript and
+have it run as a purely static single-page-app.
+
+
+  [TravisBadge]: https://travis-ci.org/bilalq/villustrator.svg?branch=master
+  [Travis]: https://travis-ci.org/bilalq/villustrator
