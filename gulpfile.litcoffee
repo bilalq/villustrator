@@ -77,6 +77,7 @@ Then follow through by defining all our dependencies here.
       'angular-ui-router/release/angular-ui-router.js'
       'eight-bit-color-picker/lib/eight-bit-color-picker.js'
       'xterm-256color-palette/index.js'
+      'ng8BitColorPicker/lib/ng8BitColorPicker.js'
     ].map prefixWithBower
 
     bowerStyleDeps = [
@@ -114,16 +115,17 @@ And we'll have a separate `vendor` task to build vendor.js/css files.
 Templates
 ---------
 We precompile our Jade templates and build them into Angular modules that write
-to the `$templateCache` service. The module names will match whatever directory
-any given template lives in. The `templateUrl` that identifies each template
-will match the path to the template without the filetype suffix.
+to the `$templateCache` service. The module names will match the path to
+whatever directory any given template lives in. The `templateUrl` that
+identifies each template will match the path to the template without the
+filetype suffix.
 
     gulp.task 'templates', ->
       gulp.src 'app/**/*.jade'
       .pipe jade doctype: 'html'
       .pipe ngHtml2Js
         declareModule: false
-        moduleName: (file) -> "Villustrator.#{file.relative.split('/')[0]}"
+        moduleName: (file) -> "Villustrator.#{file.relative.split('/')[0...-1].join('.')}"
         rename: (url) -> url.replace '.html', ''
       .pipe concat 'templates.js'
       .pipe gulp.dest buildDir
@@ -154,7 +156,7 @@ injection minification safe, and finally pass it through to uglify to minify and
 mangle.
 
     gulp.task 'scripts', ->
-      gulp.src ['app/**/*.module.litcoffee', 'app/**/*.litcoffee']
+      gulp.src ['app/**/module.litcoffee', 'app/**/*.litcoffee']
       .pipe sourcemaps.init()
       .pipe coffee bare: true
       .on 'error', gutil.log
@@ -216,7 +218,7 @@ take care of watching.
       karma.server.start
         files: Array::concat.call(
           bowerScriptDeps,
-          'app/**/*.module.litcoffee',
+          'app/**/module.litcoffee',
           'app/**/*.litcoffee',
           "#{buildDir}/templates.js",
           bowerTestDeps,
@@ -231,7 +233,7 @@ take care of watching.
           options: { bare: true, sourceMap: true, literate: true }
           transformPath: (path) -> path.replace /\.(lit)?coffee$/, '.js'
       , (exitCode) ->
-        if process.env.CI then process.exit(exitCode) else done(exitCode)
+        if process.env.CI then process.exit(exitCode) else done()
 
 
 Development Server
@@ -282,7 +284,7 @@ Clean Task
 We expose a simple clean task that just removes the build and bower dependency
 directories.
 
-    gulp.task 'clean', -> del [buildDir, bowerDir]
+    gulp.task 'clean', (cb) -> del [buildDir, bowerDir], cb
 
 
 <!-- Footnote Links -->
