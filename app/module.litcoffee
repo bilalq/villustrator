@@ -7,7 +7,7 @@ We define the main `Villustrator` module here and express all its dependencies.
 
     angular.module 'Villustrator', [
       'Villustrator.home'
-      'Villustrator.fileManagement'
+      'Villustrator.faqs'
     ]
 
 We also add in a routing rule to redirect unknown URLs to `/`.
