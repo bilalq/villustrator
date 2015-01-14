@@ -1,7 +1,42 @@
+// Styles applying globally to standard HTML tags are defined here.
 @import "base";
 
 body {
   background: $body-bg-color;
-  color: white;
+  color: $fg-color;
+  padding: 0 20px;
+  font-weight: $font-weight;
 }
 
+a {
+  &, &:focus, &:hover, &:visited {
+    text-decoration: none;
+    outline: none;
+  }
+}
+
+%header-tag {
+  font-family: Monaco, Menlo, monospace;
+  font-weight: $font-weight;
+  color: $header-color;
+  a {
+    &, &:visited, &:focus {
+      color: $header-color;
+    }
+    &:hover {
+      color: darken($header-color, 12%)
+    }
+  }
+}
+h1 {
+  @extend %header-tag;
+  font-size: 24px;
+}
+h2 {
+  @extend %header-tag;
+  font-size: 20px;
+}
+h3 {
+  @extend %header-tag;
+  font-size: 18px;
+}
